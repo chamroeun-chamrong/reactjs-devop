@@ -36,7 +36,7 @@ jobs:
   deploy-service: 
     needs: build-and-push
     runs-on: ubuntu-latest
-    environment: DOCKER_REPOSITORY
+    environment: DOCKER_ENV
     steps: 
       - name: Checkout Code 
         uses: actions/checkout@v3
