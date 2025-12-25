@@ -33,7 +33,7 @@ jobs:
         if: always()
         run: |
           docker logout
-    deploy-service: 
+  deploy-service: 
       needs: build-and-push
       runs-on: ubuntu-latest
       environment: DOCKER_REPOSITORY
