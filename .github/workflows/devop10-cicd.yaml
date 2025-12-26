@@ -1,4 +1,3 @@
-
 # condition: when to trigger the actions 
 on: 
   push: 
@@ -33,3 +32,26 @@ jobs:
         if: always()
         run: |
           docker logout
+  deploy-gcp:
+    needs: build-push
+    runs-on: ubuntu-latest
+    environment: GCP_ENV
+    steps: 
+      - name: Checkout Code 
+        uses: actions/checkout@v3
+      - name: Use with SHA 
+        run: | 
+          echo "TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+      - name: Deploy via SSH to GCP VM 
+        uses: appleboy/ssh-action@v1.0.0
+        with: 
+          host: ${{ secrets.IP }}
+          username: ${{ secrets.GCP_USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          envs: TAG
+          script: |
+            docker stop my-app || true 
+            docker rm my-app || true 
+            docker run -dp 8000:8080 \
+            --name my-app \
+            "chamrongcc/${{env.IMAGE_NAME}}:${{env.TAG}}"
